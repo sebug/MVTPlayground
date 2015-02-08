@@ -16,6 +16,8 @@ type M (eff :: # !) = Control.Monad.Eff.Eff (aj :: API.User.Ajax | eff)
 type Url = Prim.String
 type HttpStatus = Prim.String
 foreign import data Ajax :: !
+foreign import saveUser :: forall eff. API.User.User -> (Data.Either.Either API.User.HttpStatus Prim.String -> API.User.M eff Prelude.Unit) -> API.User.M eff Prelude.Unit
+foreign import loadUser :: forall eff. Prelude.Unit -> (Data.Either.Either API.User.HttpStatus Prim.String -> API.User.M eff Prelude.Unit) -> API.User.M eff Prelude.Unit
 foreign import stringifyUser :: API.User.User -> Prim.String
 foreign import parseUser :: Prim.String -> Data.Foreign.F API.User.User
 foreign import postCall :: forall eff. API.User.Url -> Prim.String -> (Data.Either.Either API.User.HttpStatus Prim.String -> API.User.M eff Prelude.Unit) -> API.User.M eff Prelude.Unit

@@ -105,6 +105,9 @@ var postCall = function (url) {
         };
     };
 };
+var saveUser = function (u) {
+    return postCall("/User/SaveUser")(stringifyUser(u));
+};
 var parseUser = function (content) {
     return Data_Foreign_Class.readJSON(userIsForeign)(content);
 };
@@ -113,13 +116,18 @@ var getCall = function (url) {
         return getCallImpl(url)(Prelude["<<<"](Prelude.semigroupoidArr)(k)(Data_Either.Right.create))(Prelude["<<<"](Prelude.semigroupoidArr)(k)(Data_Either.Left.create));
     };
 };
+var loadUser = function (_4) {
+    return getCall("/User/LoadUser");
+};
 module.exports = {
     User: User, 
     getCall: getCall, 
     getCallImpl: getCallImpl, 
+    loadUser: loadUser, 
     parseUser: parseUser, 
     postCall: postCall, 
     postCallImpl: postCallImpl, 
+    saveUser: saveUser, 
     stringifyUser: stringifyUser, 
     userIsForeign: userIsForeign
 };
@@ -2617,7 +2625,7 @@ LoadUser.value = new LoadUser();
 function getValue(e) {  return e.target.value;};
 var saveSetState = function (u) {
     return function (f) {
-        return API_User.postCall("/User/SaveUser")(API_User.stringifyUser(u))(function (res) {
+        return API_User.saveUser(u)(function (res) {
             if (res instanceof Data_Either.Left) {
                 return f({
                     user: new API_User.User({
@@ -2638,7 +2646,7 @@ var saveSetState = function (u) {
     };
 };
 var loadSetState = function (f) {
-    return API_User.getCall("/User/LoadUser")(function (res) {
+    return API_User.loadUser(Prelude.unit)(function (res) {
         if (res instanceof Data_Either.Left) {
             return f({
                 user: new API_User.User({

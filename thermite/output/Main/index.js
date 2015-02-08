@@ -34,7 +34,7 @@ LoadUser.value = new LoadUser();
 function getValue(e) {  return e.target.value;};
 var saveSetState = function (u) {
     return function (f) {
-        return API_User.postCall("/User/SaveUser")(API_User.stringifyUser(u))(function (res) {
+        return API_User.saveUser(u)(function (res) {
             if (res instanceof Data_Either.Left) {
                 return f({
                     user: new API_User.User({
@@ -55,7 +55,7 @@ var saveSetState = function (u) {
     };
 };
 var loadSetState = function (f) {
-    return API_User.getCall("/User/LoadUser")(function (res) {
+    return API_User.loadUser(Prelude.unit)(function (res) {
         if (res instanceof Data_Either.Left) {
             return f({
                 user: new API_User.User({

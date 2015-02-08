@@ -104,6 +104,9 @@ var postCall = function (url) {
         };
     };
 };
+var saveUser = function (u) {
+    return postCall("/User/SaveUser")(stringifyUser(u));
+};
 var parseUser = function (content) {
     return Data_Foreign_Class.readJSON(userIsForeign)(content);
 };
@@ -112,13 +115,18 @@ var getCall = function (url) {
         return getCallImpl(url)(Prelude["<<<"](Prelude.semigroupoidArr)(k)(Data_Either.Right.create))(Prelude["<<<"](Prelude.semigroupoidArr)(k)(Data_Either.Left.create));
     };
 };
+var loadUser = function (_4) {
+    return getCall("/User/LoadUser");
+};
 module.exports = {
     User: User, 
     getCall: getCall, 
     getCallImpl: getCallImpl, 
+    loadUser: loadUser, 
     parseUser: parseUser, 
     postCall: postCall, 
     postCallImpl: postCallImpl, 
+    saveUser: saveUser, 
     stringifyUser: stringifyUser, 
     userIsForeign: userIsForeign
 };

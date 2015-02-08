@@ -128,3 +128,11 @@ foreign import stringifyUser
              Age: u.value0.age
            });
        }""" :: User -> String
+
+-- Also, some nicer interfaces
+loadUser :: forall eff. Unit -> (Either HttpStatus String -> M eff Unit) -> M eff Unit
+loadUser _ = getCall "/User/LoadUser"
+
+saveUser :: forall eff. User -> (Either HttpStatus String -> M eff Unit) -> M eff Unit
+saveUser u = postCall "/User/SaveUser" (stringifyUser u)
+

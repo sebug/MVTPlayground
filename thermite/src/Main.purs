@@ -35,7 +35,7 @@ render ctx st _ = case st.user of
 
 loadSetState :: forall eff. (State -> Eff (aj :: Ajax | eff) Unit) -> Eff (aj :: Ajax | eff) Unit
 loadSetState f =
-  getCall "/User/LoadUser" \res -> case res of
+  loadUser unit \res -> case res of
     Left err -> f { user: User {firstName: "Error", name: "Error", address: "Error", age: 0}}
     Right content ->
       case (parseUser content) of
@@ -44,7 +44,7 @@ loadSetState f =
 
 saveSetState :: forall eff. User -> (State -> Eff (aj :: Ajax | eff) Unit) -> Eff (aj :: Ajax | eff) Unit
 saveSetState u f =
-  postCall "/User/SaveUser" (stringifyUser u) \res -> case res of
+  saveUser u \res -> case res of
     Left err -> f { user: User {firstName: "Error", name: "Error", address: "Error", age: 0}}
     Right content -> f { user: u }
 
