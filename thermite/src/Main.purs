@@ -28,8 +28,11 @@ render ctx st _ = T.div' [ T.div' [ T.text "First name"
                          , T.button [ T.onClick ctx (const SaveUser) ] [ T.text "Save User" ]
                          ]
 
+loadSetState :: forall eff. (State -> Eff eff Unit) -> Eff eff Unit
+loadSetState f = f { firstName: "Blubber" }
+
 performAction :: T.PerformAction Unit Action (T.Action _ State)
-performAction _ LoadUser = T.modifyState \st -> { firstName: st.firstName }
+performAction _ LoadUser = T.asyncSetState loadSetState
 performAction _ SaveUser = T.modifyState \st -> { firstName: st.firstName }
 performAction _ (SetFirstName fn) = T.modifyState \st -> { firstName: fn }
 

@@ -26,10 +26,11 @@ import Thermite.Events ()
 import Thermite.Types ()
 data Action = SetFirstName Prim.String | SaveUser  | LoadUser 
 type State = { firstName :: Prim.String }
-foreign import main :: forall t112. Control.Monad.Eff.Eff (trace :: Debug.Trace.Trace, aj :: API.User.Ajax, dom :: DOM.DOM | t112) Prelude.Unit
+foreign import main :: forall t115. Control.Monad.Eff.Eff (trace :: Debug.Trace.Trace, aj :: API.User.Ajax, dom :: DOM.DOM | t115) Prelude.Unit
 foreign import initialState :: Main.State
 foreign import handleChangeEvent :: Thermite.Events.FormEvent -> Main.Action
 foreign import getValue :: forall event. event -> Prim.String
-foreign import performAction :: forall t7. Thermite.Types.PerformAction Prelude.Unit Main.Action (Thermite.Action.Action t7 Main.State)
+foreign import performAction :: forall t10. Thermite.Types.PerformAction Prelude.Unit Main.Action (Thermite.Action.Action t10 Main.State)
+foreign import loadSetState :: forall eff. (Main.State -> Control.Monad.Eff.Eff eff Prelude.Unit) -> Control.Monad.Eff.Eff eff Prelude.Unit
 foreign import render :: Thermite.Types.Render Main.State Prelude.Unit Main.Action
-foreign import spec :: forall t57. Thermite.Types.Spec (Thermite.Action.Action t57 Main.State) Main.State Prelude.Unit Main.Action
+foreign import spec :: forall t59. Thermite.Types.Spec (Thermite.Action.Action t59 Main.State) Main.State Prelude.Unit Main.Action
