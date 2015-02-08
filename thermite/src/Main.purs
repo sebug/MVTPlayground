@@ -45,4 +45,4 @@ initialState = { firstName: "Blubb" }
 main = do
   let cl = T.createClass spec
   T.render cl unit
-  trace (getCall "/Home/LoadUser")
+  trace "Hai"

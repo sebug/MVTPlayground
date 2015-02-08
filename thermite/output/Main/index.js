@@ -8,7 +8,6 @@ var Thermite_Events = require("Thermite.Events");
 var Prelude = require("Prelude");
 var Thermite_Action = require("Thermite.Action");
 var Debug_Trace = require("Debug.Trace");
-var API_User = require("API.User");
 var Control_Monad_Eff = require("Control.Monad.Eff");
 function SetFirstName(value0) {
     this.value0 = value0;
@@ -69,7 +68,7 @@ var main = (function () {
     var cl = Thermite.createClass(spec);
     return function __do() {
         Thermite.render(cl)(Prelude.unit)();
-        return Debug_Trace.trace(API_User.getCall("/Home/LoadUser"))();
+        return Debug_Trace.trace("Hai")();
     };
 })();
 module.exports = {

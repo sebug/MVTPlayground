@@ -30,5 +30,10 @@ namespace MvcSample.Web
 	      Address = "My address"
 	  };
       }
+
+      public void SaveUser(User user)
+      {
+	System.Console.WriteLine(user);
+      }
     }
 }
