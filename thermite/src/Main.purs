@@ -10,26 +10,35 @@ import qualified Thermite.Action as T
 import qualified Thermite.Events as T
 import qualified Thermite.Types as T
 
-type State = { counter :: Number }
+type State = { firstName :: String }
 
-data Action = Increment | Decrement
+data Action = SetFirstName String | SaveUser | LoadUser
 
 spec :: T.Spec (T.Action _ State) State Unit Action
 spec = T.simpleSpec initialState performAction render
-         # T.componentWillMount Increment
+         # T.componentWillMount LoadUser
 
 render :: T.Render State Unit Action
-render ctx st _ = T.div' [ T.p' [ T.text (show st.counter) ]
-                         , T.button [ T.onClick ctx (const Increment) ] [ T.text "Increment" ]
-                         , T.button [ T.onClick ctx (const Decrement) ] [ T.text "Decrement" ]
+render ctx st _ = T.div' [ T.div' [ T.text "First name"
+                                  , T.input [ A.value st.firstName, T.onChange ctx handleChangeEvent ] [] ]
+                         , T.button [ T.onClick ctx (const SaveUser) ] [ T.text "Save User" ]
                          ]
 
 performAction :: T.PerformAction Unit Action (T.Action _ State)
-performAction _ Increment = T.modifyState \st -> { counter: st.counter + 1 }
-performAction _ Decrement = T.modifyState \st -> { counter: st.counter - 1 }
+performAction _ LoadUser = T.modifyState \st -> { firstName: st.firstName }
+performAction _ SaveUser = T.modifyState \st -> { firstName: st.firstName }
+performAction _ (SetFirstName fn) = T.modifyState \st -> { firstName: fn }
+
+foreign import getValue
+  "function getValue(e) {\
+  \  return e.target.value;\
+  \}" :: forall event. event -> String
+
+handleChangeEvent :: T.FormEvent -> Action
+handleChangeEvent e = SetFirstName (getValue e)
 
 initialState :: State
-initialState = { counter: 0 }
+initialState = { firstName: "Blubb" }
 
 main = do
   let cl = T.createClass spec
