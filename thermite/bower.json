@@ -1,5 +1,5 @@
 {
-  "name": "thermite",
+  "name": "thermite_controls",
   "version": "1.0.0",
   "moduleType": [
     "node"
@@ -9,5 +9,8 @@
     "node_modules",
     "bower_components",
     "output"
-  ]
+  ],
+    "dependencies": {
+	"purescript-thermite": "~0.5.0"
+    }
 }

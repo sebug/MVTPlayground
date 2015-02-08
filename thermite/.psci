@@ -1,0 +1,8 @@
+:m src/Main.purs
+:m test/Main.purs
+:m bower_components/purescript-dom/src/DOM.purs
+:m bower_components/purescript-thermite/src/Thermite.purs
+:m bower_components/purescript-thermite/src/Thermite/Events.purs
+:m bower_components/purescript-thermite/src/Thermite/Html.purs
+:m bower_components/purescript-thermite/src/Thermite/Html/Attributes.purs
+:m bower_components/purescript-thermite/src/Thermite/Html/Elements.purs
