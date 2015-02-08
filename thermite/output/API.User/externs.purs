@@ -2,20 +2,23 @@
 module API.User where
 import API.User ()
 import Prelude ()
+import Data.Foreign.Class ()
 import Prim ()
 import Prelude ()
 import Control.Monad.Eff ()
 import Control.Monad.Cont.Trans ()
 import Data.Either ()
+import Data.Foreign ()
+import Data.Foreign.Class ()
+data User = User { age :: Prim.Number, address :: Prim.String, name :: Prim.String, firstName :: Prim.String }
 type C (eff :: # !) = Control.Monad.Cont.Trans.ContT Prelude.Unit (API.User.M eff)
 type M (eff :: # !) = Control.Monad.Eff.Eff (aj :: API.User.Ajax | eff)
 type Url = Prim.String
 type HttpStatus = Prim.String
 foreign import data Ajax :: !
-foreign import loadTransformSave :: forall eff. API.User.Url -> API.User.Url -> API.User.C eff (Data.Either.Either API.User.HttpStatus Prim.String)
-foreign import postCallCont :: forall eff. API.User.Url -> Prim.String -> API.User.C eff (Data.Either.Either API.User.HttpStatus Prim.String)
-foreign import getCallCont :: forall eff. API.User.Url -> API.User.C eff (Data.Either.Either API.User.HttpStatus Prim.String)
+foreign import parseUser :: Prim.String -> Data.Foreign.F API.User.User
 foreign import postCall :: forall eff. API.User.Url -> Prim.String -> (Data.Either.Either API.User.HttpStatus Prim.String -> API.User.M eff Prelude.Unit) -> API.User.M eff Prelude.Unit
 foreign import getCall :: forall eff. API.User.Url -> (Data.Either.Either API.User.HttpStatus Prim.String -> API.User.M eff Prelude.Unit) -> API.User.M eff Prelude.Unit
 foreign import postCallImpl :: forall eff. API.User.Url -> Prim.String -> (Prim.String -> Control.Monad.Eff.Eff (aj :: API.User.Ajax | eff) Prelude.Unit) -> (API.User.HttpStatus -> Control.Monad.Eff.Eff (aj :: API.User.Ajax | eff) Prelude.Unit) -> Control.Monad.Eff.Eff (aj :: API.User.Ajax | eff) Prelude.Unit
 foreign import getCallImpl :: forall eff. API.User.Url -> (Prim.String -> Control.Monad.Eff.Eff (aj :: API.User.Ajax | eff) Prelude.Unit) -> (API.User.HttpStatus -> Control.Monad.Eff.Eff (aj :: API.User.Ajax | eff) Prelude.Unit) -> Control.Monad.Eff.Eff (aj :: API.User.Ajax | eff) Prelude.Unit
+foreign import instance userIsForeign :: Data.Foreign.Class.IsForeign API.User.User

@@ -14,6 +14,8 @@ import qualified Thermite.Action as T
 import qualified Thermite.Events as T
 import qualified Thermite.Types as T
 
+import Data.Either
+
 type State = { firstName :: String }
 
 data Action = SetFirstName String | SaveUser | LoadUser
@@ -28,8 +30,14 @@ render ctx st _ = T.div' [ T.div' [ T.text "First name"
                          , T.button [ T.onClick ctx (const SaveUser) ] [ T.text "Save User" ]
                          ]
 
-loadSetState :: forall eff. (State -> Eff eff Unit) -> Eff eff Unit
-loadSetState f = f { firstName: "Blubber" }
+loadSetState :: forall eff. (State -> Eff (aj :: Ajax | eff) Unit) -> Eff (aj :: Ajax | eff) Unit
+loadSetState f =
+  getCall "/Home/LoadUser" \res -> case res of
+    Left err -> f { firstName: "Error" }
+    Right content ->
+      case (parseUser content) of
+           Left _ -> f { firstName: "Parse error" }
+           Right (User u) -> f { firstName: u.firstName }
 
 performAction :: T.PerformAction Unit Action (T.Action _ State)
 performAction _ LoadUser = T.asyncSetState loadSetState
@@ -50,5 +58,5 @@ initialState = { firstName: "Blubb" }
 main = do
   let cl = T.createClass spec
   T.render cl unit
-  runContT (loadTransformSave "/Home/LoadUser" "http://localhost:5004/User/SaveUser") print
+
 

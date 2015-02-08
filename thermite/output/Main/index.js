@@ -6,11 +6,8 @@ var Thermite_Html = require("Thermite.Html");
 var Thermite_Html_Attributes = require("Thermite.Html.Attributes");
 var Thermite_Events = require("Thermite.Events");
 var Prelude = require("Prelude");
-var Thermite_Action = require("Thermite.Action");
-var Control_Monad_Cont_Trans = require("Control.Monad.Cont.Trans");
 var API_User = require("API.User");
-var Debug_Trace = require("Debug.Trace");
-var Control_Monad_Eff = require("Control.Monad.Eff");
+var Thermite_Action = require("Thermite.Action");
 var Data_Either = require("Data.Either");
 function SetFirstName(value0) {
     this.value0 = value0;
@@ -28,8 +25,27 @@ function LoadUser() {
 LoadUser.value = new LoadUser();
 function getValue(e) {  return e.target.value;};
 var loadSetState = function (f) {
-    return f({
-        firstName: "Blubber"
+    return API_User.getCall("/Home/LoadUser")(function (res) {
+        if (res instanceof Data_Either.Left) {
+            return f({
+                firstName: "Error"
+            });
+        };
+        if (res instanceof Data_Either.Right) {
+            var _7 = API_User.parseUser(res.value0);
+            if (_7 instanceof Data_Either.Left) {
+                return f({
+                    firstName: "Parse error"
+                });
+            };
+            if (_7 instanceof Data_Either.Right) {
+                return f({
+                    firstName: _7.value0.value0.firstName
+                });
+            };
+            throw new Error("Failed pattern match");
+        };
+        throw new Error("Failed pattern match");
     });
 };
 var performAction = function (_3) {
@@ -70,10 +86,7 @@ var render = function (_0) {
 var spec = Thermite.componentWillMount(LoadUser.value)(Thermite.simpleSpec(initialState)(performAction)(render));
 var main = (function () {
     var cl = Thermite.createClass(spec);
-    return function __do() {
-        Thermite.render(cl)(Prelude.unit)();
-        return Control_Monad_Cont_Trans.runContT(API_User.loadTransformSave("/Home/LoadUser")("http://localhost:5004/User/SaveUser"))(Debug_Trace.print(Data_Either.showEither(Prelude.showString)(Prelude.showString)))();
-    };
+    return Thermite.render(cl)(Prelude.unit);
 })();
 module.exports = {
     LoadUser: LoadUser, 

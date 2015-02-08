@@ -5,6 +5,9 @@ import Control.Monad.Cont.Trans
 
 import Data.Either
 
+import Data.Foreign
+import Data.Foreign.Class
+
 -- The ajax effect
 foreign import data Ajax :: !
 
@@ -15,6 +18,7 @@ foreign import getCallImpl
   """function getCallImpl(url) {
      return function (onSuccess) {
           return function (onFailure) {
+              return function () {
                  var xmlhttp;
 
                  if (window.XMLHttpRequest) {
@@ -25,16 +29,17 @@ foreign import getCallImpl
                  xmlhttp.onreadystatechange = function () {
                      if (xmlhttp.readyState === 4 ) {
                        if(xmlhttp.status === 200){
-                           onSuccess(xmlhttp.responseText);
+                           onSuccess(xmlhttp.responseText)();
                        }
                        else {
-                           onFailure(xmlhttp.status);
+                           onFailure(xmlhttp.status)();
                        }
                     }
                  };
 
                  xmlhttp.open('GET', url, true);
                  xmlhttp.send();
+             };
           };
       };
   }""" :: forall eff. Url -> (String -> Eff (aj :: Ajax | eff) Unit) -> (HttpStatus -> Eff (aj :: Ajax | eff) Unit) -> (Eff (aj :: Ajax | eff) Unit)
@@ -93,21 +98,22 @@ postCall url content k =
 
 type C eff = ContT Unit (M eff)
 
-getCallCont :: forall eff.
-   Url ->
-   C eff (Either HttpStatus String)
-getCallCont url = ContT $ getCall url
+data User = User { firstName :: String, name :: String, address:: String, age:: Number }
 
-postCallCont :: forall eff.
-                Url ->
-                String ->
-                C eff (Either HttpStatus String)
-postCallCont url content = ContT $ postCall url content
+instance userIsForeign :: IsForeign User where
+  read value = do
+    firstName <- readProp "FirstName" value
+    name <- readProp "Name" value
+    address <- readProp "Address" value
+    age <- readProp "Age" value
+    return $ User {
+      firstName: firstName
+      , name: name
+      , address: address
+      , age: age
+      }
 
-loadTransformSave :: forall eff. Url -> Url -> C eff (Either HttpStatus String)
-loadTransformSave inUrl outUrl = do
-  u <- getCallCont inUrl
-  case u of
-    Left status -> return $ Left status
-    Right content -> postCallCont outUrl content
+
+parseUser :: String -> F User
+parseUser content = readJSON content :: F User
 
