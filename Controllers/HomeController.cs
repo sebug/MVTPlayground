@@ -20,5 +20,15 @@ namespace MvcSample.Web
 
             return user;
         }
+
+      public User LoadUser()
+      {
+	return new User() 
+	  {
+	    FirstName = "Sebastian",
+	      Name = "Gfeller",
+	      Address = "My address"
+	  };
+      }
     }
 }

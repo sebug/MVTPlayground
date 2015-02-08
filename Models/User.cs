@@ -4,6 +4,11 @@ namespace MvcSample.Web.Models
 {
     public class User
     {
+      public string FirstName
+      {
+	get; set;
+      }
+
         [Required]
         [MinLength(4)]
         public string Name { get; set; }
