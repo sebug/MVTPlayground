@@ -69,7 +69,7 @@ var main = (function () {
     var cl = Thermite.createClass(spec);
     return function __do() {
         Thermite.render(cl)(Prelude.unit)();
-        return Debug_Trace.trace(API_User.getCall(Prelude.unit))();
+        return Debug_Trace.trace(API_User.getCall("/Home/LoadUser"))();
     };
 })();
 module.exports = {

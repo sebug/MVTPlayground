@@ -2,4 +2,4 @@
 module API.User where
 import Prim ()
 import Prelude ()
-foreign import getCall :: Prelude.Unit -> Prim.String
+foreign import getCall :: Prim.String -> Prim.String
