@@ -31,9 +31,11 @@ namespace MvcSample.Web
 	  };
       }
 
-      public void SaveUser(User user)
+      [HttpPost]
+      public JsonResult SaveUser(User model)
       {
-	System.Console.WriteLine(user);
+	System.Console.WriteLine("First name is: " + model.FirstName);
+        return Json("Response");
       }
     }
 }

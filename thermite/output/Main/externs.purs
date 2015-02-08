@@ -8,10 +8,14 @@ import Thermite.Html.Attributes ()
 import Thermite.Events ()
 import Prelude ()
 import Thermite.Action ()
+import Control.Monad.Cont.Trans ()
+import API.User ()
 import Debug.Trace ()
 import Prim ()
 import Prelude ()
 import Debug.Trace ()
+import Control.Monad.Eff ()
+import Control.Monad.Cont.Trans ()
 import API.User ()
 import Thermite ()
 import Thermite.Html ()
@@ -22,7 +26,7 @@ import Thermite.Events ()
 import Thermite.Types ()
 data Action = SetFirstName Prim.String | SaveUser  | LoadUser 
 type State = { firstName :: Prim.String }
-foreign import main :: forall t101. Control.Monad.Eff.Eff (trace :: Debug.Trace.Trace, dom :: DOM.DOM | t101) Prelude.Unit
+foreign import main :: forall t112. Control.Monad.Eff.Eff (trace :: Debug.Trace.Trace, aj :: API.User.Ajax, dom :: DOM.DOM | t112) Prelude.Unit
 foreign import initialState :: Main.State
 foreign import handleChangeEvent :: Thermite.Events.FormEvent -> Main.Action
 foreign import getValue :: forall event. event -> Prim.String

@@ -7,8 +7,11 @@ var Thermite_Html_Attributes = require("Thermite.Html.Attributes");
 var Thermite_Events = require("Thermite.Events");
 var Prelude = require("Prelude");
 var Thermite_Action = require("Thermite.Action");
+var Control_Monad_Cont_Trans = require("Control.Monad.Cont.Trans");
+var API_User = require("API.User");
 var Debug_Trace = require("Debug.Trace");
 var Control_Monad_Eff = require("Control.Monad.Eff");
+var Data_Either = require("Data.Either");
 function SetFirstName(value0) {
     this.value0 = value0;
 };
@@ -24,26 +27,26 @@ function LoadUser() {
 };
 LoadUser.value = new LoadUser();
 function getValue(e) {  return e.target.value;};
-var performAction = function (_3) {
-    return function (_4) {
-        if (_4 instanceof LoadUser) {
+var performAction = function (_4) {
+    return function (_5) {
+        if (_5 instanceof LoadUser) {
             return Thermite_Action.modifyState(function (st) {
                 return {
                     firstName: st.firstName
                 };
             });
         };
-        if (_4 instanceof SaveUser) {
+        if (_5 instanceof SaveUser) {
             return Thermite_Action.modifyState(function (st) {
                 return {
                     firstName: st.firstName
                 };
             });
         };
-        if (_4 instanceof SetFirstName) {
+        if (_5 instanceof SetFirstName) {
             return Thermite_Action.modifyState(function (st) {
                 return {
-                    firstName: _4.value0
+                    firstName: _5.value0
                 };
             });
         };
@@ -56,10 +59,10 @@ var initialState = {
 var handleChangeEvent = function (e) {
     return new SetFirstName(getValue(e));
 };
-var render = function (_0) {
-    return function (_1) {
-        return function (_2) {
-            return Thermite_Html_Elements["div'"]([ Thermite_Html_Elements["div'"]([ Thermite_Html.text("First name"), Thermite_Html_Elements.input([ Thermite_Html_Attributes.value(_1.firstName), Thermite_Events.onChange(_0)(handleChangeEvent) ])([  ]) ]), Thermite_Html_Elements.button([ Thermite_Events.onClick(_0)(Prelude["const"](SaveUser.value)) ])([ Thermite_Html.text("Save User") ]) ]);
+var render = function (_1) {
+    return function (_2) {
+        return function (_3) {
+            return Thermite_Html_Elements["div'"]([ Thermite_Html_Elements["div'"]([ Thermite_Html.text("First name"), Thermite_Html_Elements.input([ Thermite_Html_Attributes.value(_2.firstName), Thermite_Events.onChange(_1)(handleChangeEvent) ])([  ]) ]), Thermite_Html_Elements.button([ Thermite_Events.onClick(_1)(Prelude["const"](SaveUser.value)) ])([ Thermite_Html.text("Save User") ]) ]);
         };
     };
 };
@@ -68,7 +71,7 @@ var main = (function () {
     var cl = Thermite.createClass(spec);
     return function __do() {
         Thermite.render(cl)(Prelude.unit)();
-        return Debug_Trace.trace("Hai")();
+        return Control_Monad_Cont_Trans.runContT(API_User.loadTransformSave("/Home/LoadUser")("http://localhost:5004/User/SaveUser"))(Debug_Trace.print(Data_Either.showEither(Prelude.showString)(Prelude.showString)))();
     };
 })();
 module.exports = {

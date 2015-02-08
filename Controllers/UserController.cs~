@@ -1,0 +1,10 @@
+using Microsoft.AspNet.Mvc;
+using MvcSample.Web.Models;
+
+namespace MvcSample.Web
+{
+  public class UserController : Controller
+  {
+    
+  }
+}

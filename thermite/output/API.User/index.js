@@ -2,41 +2,12 @@
 "use strict";
 var Prelude = require("Prelude");
 var Data_Either = require("Data.Either");
+var Control_Monad_Cont_Trans = require("Control.Monad.Cont.Trans");
+var Control_Monad_Eff = require("Control.Monad.Eff");
 function getCallImpl(url) {
      return function (onSuccess) {
           return function (onFailure) {
-             var msg = 'Hello',
-                 xmlhttp;
-
-             if (window.XMLHttpRequest) {
-                 xmlhttp = new XMLHttpRequest();
-             } else {
-                 xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
-             }
-             xmlhttp.onreadystatechange = function () {
-                 if (xmlhttp.readyState === 4 ) {
-                   if(xmlhttp.status === 200){
-                       onSuccess(xmlhttp.responseText);
-                   }
-                   else {
-                       onFailure(xmlhttp.status);
-                   }
-                }
-             };
-
-             xmlhttp.open('GET', url, true);
-             xmlhttp.send();
-
-             return msg;
-          };
-      };
-  };
-function postCallImpl(url) {
-     return function (content) {
-         return function (onSuccess) {
-              return function (onFailure) {
-                 var msg = 'Hello',
-                     xmlhttp;
+                 var xmlhttp;
 
                  if (window.XMLHttpRequest) {
                      xmlhttp = new XMLHttpRequest();
@@ -54,10 +25,40 @@ function postCallImpl(url) {
                     }
                  };
 
-                 xmlhttp.open('POST', url, true);
+                 xmlhttp.open('GET', url, true);
                  xmlhttp.send();
+          };
+      };
+  };
+function postCallImpl(url) {
+     return function (content) {
+         return function (onSuccess) {
+              return function (onFailure) {
+                     var xmlhttp,
+                         payload;
 
-                 return msg;
+                     if (window.XMLHttpRequest) {
+                         xmlhttp = new XMLHttpRequest();
+                     } else {
+                         xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+                     }
+                     xmlhttp.onreadystatechange = function () {
+                         if (xmlhttp.readyState === 4 ) {
+                           if(xmlhttp.status === 200){
+                               onSuccess(xmlhttp.responseText);
+                           }
+                           else {
+                               onFailure(xmlhttp.status);
+                           }
+                        }
+                     };
+                     payload = content;
+
+                     xmlhttp.open('POST', url, true);
+                     xmlhttp.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+                     xmlhttp.send(payload);
+
+                     return content;
               };
           };
      };
@@ -69,14 +70,38 @@ var postCall = function (url) {
         };
     };
 };
+var postCallCont = function (url) {
+    return function (content) {
+        return Control_Monad_Cont_Trans.ContT.create(postCall(url)(content));
+    };
+};
 var getCall = function (url) {
     return function (k) {
         return getCallImpl(url)(Prelude["<<<"](Prelude.semigroupoidArr)(k)(Data_Either.Right.create))(Prelude["<<<"](Prelude.semigroupoidArr)(k)(Data_Either.Left.create));
     };
 };
+var getCallCont = function (url) {
+    return Control_Monad_Cont_Trans.ContT.create(getCall(url));
+};
+var loadTransformSave = function (inUrl) {
+    return function (outUrl) {
+        return Prelude[">>="](Control_Monad_Cont_Trans.bindContT(Control_Monad_Eff.monadEff))(getCallCont(inUrl))(function (_0) {
+            if (_0 instanceof Data_Either.Left) {
+                return Prelude["return"](Control_Monad_Cont_Trans.monadContT(Control_Monad_Eff.monadEff))(new Data_Either.Left(_0.value0));
+            };
+            if (_0 instanceof Data_Either.Right) {
+                return postCallCont(outUrl)(_0.value0);
+            };
+            throw new Error("Failed pattern match");
+        });
+    };
+};
 module.exports = {
     getCall: getCall, 
+    getCallCont: getCallCont, 
     getCallImpl: getCallImpl, 
+    loadTransformSave: loadTransformSave, 
     postCall: postCall, 
+    postCallCont: postCallCont, 
     postCallImpl: postCallImpl
 };

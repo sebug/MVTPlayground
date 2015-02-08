@@ -1,6 +1,8 @@
 module Main where
 
 import Debug.Trace
+import Control.Monad.Eff
+import Control.Monad.Cont.Trans
 
 import API.User
 
@@ -45,4 +47,5 @@ initialState = { firstName: "Blubb" }
 main = do
   let cl = T.createClass spec
   T.render cl unit
-  trace "Hai"
+  runContT (loadTransformSave "/Home/LoadUser" "http://localhost:5004/User/SaveUser") print
+
