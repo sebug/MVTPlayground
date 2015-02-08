@@ -5,6 +5,7 @@ This is just me toying around with ASP.NET and Thermite.
 This one has a really high barrier of entry - you'll need both [kvm](http://graemechristie.github.io/graemechristie/blog/2014/05/26/asp-dot-net-vnext-on-osx-and-linux/) and [PureScript](http://www.purescript.org).
 
 After that
+
 	kpm restore
 	kpm build
 	cd thermite
