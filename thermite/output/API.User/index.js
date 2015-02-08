@@ -42,6 +42,7 @@ function postCallImpl(url) {
      return function (content) {
          return function (onSuccess) {
               return function (onFailure) {
+                  return function () {
                      var xmlhttp,
                          payload;
 
@@ -67,10 +68,19 @@ function postCallImpl(url) {
                      xmlhttp.send(payload);
 
                      return content;
+                  }
               };
           };
      };
   };
+function stringifyUser(u) {
+           return JSON.stringify({
+             FirstName: u.value0.firstName,
+             Name: u.value0.name,
+             Address: u.value0.address,
+             Age: u.value0.age
+           });
+       };
 var userIsForeign = new Data_Foreign_Class.IsForeign(function (value) {
     return Prelude[">>="](Data_Either.bindEither)(Data_Foreign_Class.readProp(Data_Foreign_Class.stringIsForeign)(Data_Foreign_Index.indexString)("FirstName")(value))(function (_3) {
         return Prelude[">>="](Data_Either.bindEither)(Data_Foreign_Class.readProp(Data_Foreign_Class.stringIsForeign)(Data_Foreign_Index.indexString)("Name")(value))(function (_2) {
@@ -109,5 +119,6 @@ module.exports = {
     parseUser: parseUser, 
     postCall: postCall, 
     postCallImpl: postCallImpl, 
+    stringifyUser: stringifyUser, 
     userIsForeign: userIsForeign
 };

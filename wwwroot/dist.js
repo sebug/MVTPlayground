@@ -43,6 +43,7 @@ function postCallImpl(url) {
      return function (content) {
          return function (onSuccess) {
               return function (onFailure) {
+                  return function () {
                      var xmlhttp,
                          payload;
 
@@ -68,10 +69,19 @@ function postCallImpl(url) {
                      xmlhttp.send(payload);
 
                      return content;
+                  }
               };
           };
      };
   };
+function stringifyUser(u) {
+           return JSON.stringify({
+             FirstName: u.value0.firstName,
+             Name: u.value0.name,
+             Address: u.value0.address,
+             Age: u.value0.age
+           });
+       };
 var userIsForeign = new Data_Foreign_Class.IsForeign(function (value) {
     return Prelude[">>="](Data_Either.bindEither)(Data_Foreign_Class.readProp(Data_Foreign_Class.stringIsForeign)(Data_Foreign_Index.indexString)("FirstName")(value))(function (_3) {
         return Prelude[">>="](Data_Either.bindEither)(Data_Foreign_Class.readProp(Data_Foreign_Class.stringIsForeign)(Data_Foreign_Index.indexString)("Name")(value))(function (_2) {
@@ -110,6 +120,7 @@ module.exports = {
     parseUser: parseUser, 
     postCall: postCall, 
     postCallImpl: postCallImpl, 
+    stringifyUser: stringifyUser, 
     userIsForeign: userIsForeign
 };
 
@@ -2587,32 +2598,72 @@ function SetFirstName(value0) {
 SetFirstName.create = function (value0) {
     return new SetFirstName(value0);
 };
-function SaveUser() {
-
+function SetLastName(value0) {
+    this.value0 = value0;
 };
-SaveUser.value = new SaveUser();
+SetLastName.create = function (value0) {
+    return new SetLastName(value0);
+};
+function SaveUser(value0) {
+    this.value0 = value0;
+};
+SaveUser.create = function (value0) {
+    return new SaveUser(value0);
+};
 function LoadUser() {
 
 };
 LoadUser.value = new LoadUser();
 function getValue(e) {  return e.target.value;};
+var saveSetState = function (u) {
+    return function (f) {
+        return API_User.postCall("/User/SaveUser")(API_User.stringifyUser(u))(function (res) {
+            if (res instanceof Data_Either.Left) {
+                return f({
+                    user: new API_User.User({
+                        firstName: "Error", 
+                        name: "Error", 
+                        address: "Error", 
+                        age: 0
+                    })
+                });
+            };
+            if (res instanceof Data_Either.Right) {
+                return f({
+                    user: u
+                });
+            };
+            throw new Error("Failed pattern match");
+        });
+    };
+};
 var loadSetState = function (f) {
-    return API_User.getCall("/Home/LoadUser")(function (res) {
+    return API_User.getCall("/User/LoadUser")(function (res) {
         if (res instanceof Data_Either.Left) {
             return f({
-                firstName: "Error"
+                user: new API_User.User({
+                    firstName: "Error", 
+                    name: "Error", 
+                    address: "Error", 
+                    age: 0
+                })
             });
         };
         if (res instanceof Data_Either.Right) {
-            var _7 = API_User.parseUser(res.value0);
-            if (_7 instanceof Data_Either.Left) {
+            var _10 = API_User.parseUser(res.value0);
+            if (_10 instanceof Data_Either.Left) {
                 return f({
-                    firstName: "Parse error"
+                    user: new API_User.User({
+                        firstName: "Parse Error", 
+                        name: "Parse Error", 
+                        address: "Parse Error", 
+                        age: 0
+                    })
                 });
             };
-            if (_7 instanceof Data_Either.Right) {
+            if (_10 instanceof Data_Either.Right) {
                 return f({
-                    firstName: _7.value0.value0.firstName
+                    user: new API_User.User(_10.value0.value0)
                 });
             };
             throw new Error("Failed pattern match");
@@ -2626,16 +2677,29 @@ var performAction = function (_3) {
             return Thermite_Action.asyncSetState(loadSetState);
         };
         if (_4 instanceof SaveUser) {
-            return Thermite_Action.modifyState(function (st) {
-                return {
-                    firstName: st.firstName
-                };
-            });
+            return Thermite_Action.asyncSetState(saveSetState(_4.value0));
         };
         if (_4 instanceof SetFirstName) {
             return Thermite_Action.modifyState(function (st) {
                 return {
-                    firstName: _4.value0
+                    user: new API_User.User({
+                        firstName: _4.value0, 
+                        name: st.user.value0.name, 
+                        address: st.user.value0.address, 
+                        age: st.user.value0.age
+                    })
+                };
+            });
+        };
+        if (_4 instanceof SetLastName) {
+            return Thermite_Action.modifyState(function (st) {
+                return {
+                    user: new API_User.User({
+                        firstName: st.user.value0.firstName, 
+                        name: _4.value0, 
+                        address: st.user.value0.address, 
+                        age: st.user.value0.age
+                    })
                 };
             });
         };
@@ -2643,7 +2707,15 @@ var performAction = function (_3) {
     };
 };
 var initialState = {
-    firstName: "Blubb"
+    user: new API_User.User({
+        firstName: "", 
+        name: "", 
+        address: "", 
+        age: 0
+    })
+};
+var handleLastNameChangeEvent = function (e) {
+    return new SetLastName(getValue(e));
 };
 var handleChangeEvent = function (e) {
     return new SetFirstName(getValue(e));
@@ -2651,7 +2723,7 @@ var handleChangeEvent = function (e) {
 var render = function (_0) {
     return function (_1) {
         return function (_2) {
-            return Thermite_Html_Elements["div'"]([ Thermite_Html_Elements["div'"]([ Thermite_Html.text("First name"), Thermite_Html_Elements.input([ Thermite_Html_Attributes.value(_1.firstName), Thermite_Events.onChange(_0)(handleChangeEvent) ])([  ]) ]), Thermite_Html_Elements.button([ Thermite_Events.onClick(_0)(Prelude["const"](SaveUser.value)) ])([ Thermite_Html.text("Save User") ]) ]);
+            return Thermite_Html_Elements["div'"]([ Thermite_Html_Elements["div'"]([ Thermite_Html.text("First name"), Thermite_Html_Elements.input([ Thermite_Html_Attributes.value(_1.user.value0.firstName), Thermite_Events.onChange(_0)(handleChangeEvent) ])([  ]) ]), Thermite_Html_Elements["div'"]([ Thermite_Html.text("Last name"), Thermite_Html_Elements.input([ Thermite_Html_Attributes.value(_1.user.value0.name), Thermite_Events.onChange(_0)(handleLastNameChangeEvent) ])([  ]) ]), Thermite_Html_Elements.button([ Thermite_Events.onClick(_0)(Prelude["const"](new SaveUser(_1.user))) ])([ Thermite_Html.text("Save User") ]) ]);
         };
     };
 };
@@ -2664,13 +2736,16 @@ module.exports = {
     LoadUser: LoadUser, 
     SaveUser: SaveUser, 
     SetFirstName: SetFirstName, 
+    SetLastName: SetLastName, 
     getValue: getValue, 
     handleChangeEvent: handleChangeEvent, 
+    handleLastNameChangeEvent: handleLastNameChangeEvent, 
     initialState: initialState, 
     loadSetState: loadSetState, 
     main: main, 
     performAction: performAction, 
     render: render, 
+    saveSetState: saveSetState, 
     spec: spec
 };
 

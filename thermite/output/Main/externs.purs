@@ -23,13 +23,15 @@ import Thermite.Action ()
 import Thermite.Events ()
 import Thermite.Types ()
 import Data.Either ()
-data Action = SetFirstName Prim.String | SaveUser  | LoadUser 
-type State = { firstName :: Prim.String }
-foreign import main :: forall t106. Control.Monad.Eff.Eff (aj :: API.User.Ajax, dom :: DOM.DOM | t106) Prelude.Unit
+data Action = SetFirstName Prim.String | SetLastName Prim.String | SaveUser API.User.User | LoadUser 
+type State = { user :: API.User.User }
+foreign import main :: forall t157. Control.Monad.Eff.Eff (aj :: API.User.Ajax, dom :: DOM.DOM | t157) Prelude.Unit
 foreign import initialState :: Main.State
+foreign import handleLastNameChangeEvent :: Thermite.Events.FormEvent -> Main.Action
 foreign import handleChangeEvent :: Thermite.Events.FormEvent -> Main.Action
 foreign import getValue :: forall event. event -> Prim.String
-foreign import performAction :: forall t28. Thermite.Types.PerformAction Prelude.Unit Main.Action (Thermite.Action.Action (aj :: API.User.Ajax | t28) Main.State)
+foreign import performAction :: forall t34. Thermite.Types.PerformAction Prelude.Unit Main.Action (Thermite.Action.Action (aj :: API.User.Ajax | t34) Main.State)
+foreign import saveSetState :: forall eff. API.User.User -> (Main.State -> Control.Monad.Eff.Eff (aj :: API.User.Ajax | eff) Prelude.Unit) -> Control.Monad.Eff.Eff (aj :: API.User.Ajax | eff) Prelude.Unit
 foreign import loadSetState :: forall eff. (Main.State -> Control.Monad.Eff.Eff (aj :: API.User.Ajax | eff) Prelude.Unit) -> Control.Monad.Eff.Eff (aj :: API.User.Ajax | eff) Prelude.Unit
 foreign import render :: Thermite.Types.Render Main.State Prelude.Unit Main.Action
-foreign import spec :: forall t86. Thermite.Types.Spec (Thermite.Action.Action (aj :: API.User.Ajax | t86) Main.State) Main.State Prelude.Unit Main.Action
+foreign import spec :: forall t137. Thermite.Types.Spec (Thermite.Action.Action (aj :: API.User.Ajax | t137) Main.State) Main.State Prelude.Unit Main.Action

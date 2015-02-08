@@ -49,6 +49,7 @@ foreign import postCallImpl
      return function (content) {
          return function (onSuccess) {
               return function (onFailure) {
+                  return function () {
                      var xmlhttp,
                          payload;
 
@@ -74,6 +75,7 @@ foreign import postCallImpl
                      xmlhttp.send(payload);
 
                      return content;
+                  }
               };
           };
      };
@@ -117,3 +119,12 @@ instance userIsForeign :: IsForeign User where
 parseUser :: String -> F User
 parseUser content = readJSON content :: F User
 
+foreign import stringifyUser
+    """function stringifyUser(u) {
+           return JSON.stringify({
+             FirstName: u.value0.firstName,
+             Name: u.value0.name,
+             Address: u.value0.address,
+             Age: u.value0.age
+           });
+       }""" :: User -> String

@@ -5,10 +5,20 @@ namespace MvcSample.Web
 {
   public class UserController : Controller
   {
+      public User LoadUser()
+      {
+	return new User() 
+	  {
+	    FirstName = "Sebastian",
+	      Name = "Gfeller",
+	      Address = "My address"
+	  };
+      }
+
     [HttpPost]
     public JsonResult SaveUser([FromBody] User model)
     {
-      	System.Console.WriteLine("The First name is: " + model.FirstName);
+      System.Console.WriteLine(model);
         return Json("Response");
     }
   }
