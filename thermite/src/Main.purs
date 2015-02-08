@@ -2,6 +2,8 @@ module Main where
 
 import Debug.Trace
 
+import API.User
+
 import qualified Thermite as T
 import qualified Thermite.Html as T
 import qualified Thermite.Html.Elements as T
@@ -43,4 +45,4 @@ initialState = { firstName: "Blubb" }
 main = do
   let cl = T.createClass spec
   T.render cl unit
-  trace "Hello from initial thermite"
+  trace (getCall unit)
